@@ -7,7 +7,7 @@
 
 #include "zoomview.h"
 
-namespace sr_lib {
+namespace srlib  {
 
 zoomview *zoomview::it = NULL;
 int zoomview::sx = 0, zoomview::sy = 0;

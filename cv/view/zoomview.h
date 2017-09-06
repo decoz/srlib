@@ -15,7 +15,7 @@
 using namespace cv;
 using namespace std;
 
-namespace sr_lib {
+namespace srlib {
 
 typedef struct {
 	Mat src, view;

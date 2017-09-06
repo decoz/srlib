@@ -8,15 +8,16 @@
 #include <opencv2/opencv.hpp>
 #include <stdlib.h>
 #include "cview.h"
-#include "zoomview.h"
 
 using namespace cv;
 using namespace srlib;
 
 int main( int argc, char **argv ){
 
-	Mat big = imread("images/zoomview.png");
-	zoomview::show("zview", big, Size(800,600));
+	Mat img = imread("images/1.jpg");
+
+	cview::turnon("cview", "xyhistogram");
+	cview::show("zview", img);
 
 	waitKey(0);
 	return  0;

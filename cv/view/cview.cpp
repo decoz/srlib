@@ -6,8 +6,9 @@
  */
 
 #include "cview.h"
-
 #include <stdio.h>
+
+namespace srlib {
 
 cview *cview::that = NULL;
 Scalar cview::textcolor = Scalar(255,0,255);
@@ -58,6 +59,18 @@ void cview::_show(char *name, Mat img){
 	imgs[name] = img;
 
 	setMouseCallback(name, cview::handle_mouse, (void*)name);
-
-
 }
+
+void cview::_setProperty(char *name, char *pname,const char *pvalue){
+	property p = pmap[name];
+	if(strcmp(name,"xyhistogram") == 0){
+		if(strcmp(pvalue, "true")){
+			p.xyhistogram = true;
+		}
+		if(strcmp(pvalue, "false")){
+			p.xyhistogram = false;
+		}
+	}
+}
+
+} // end of srlib
