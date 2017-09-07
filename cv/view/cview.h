@@ -43,7 +43,7 @@ public:
 
 
 	map<string, Mat> imgs;
-	map<string, property> pmap;
+	map<string, property*> pmap;
 
 	static 	cview* getIt(){
 		if(that == NULL)
@@ -66,6 +66,7 @@ public:
 	void _show(char *name, Mat img);
 	void _show_mouse_pos(char *name);
 	void _setProperty(char *name, char *pname,const char *pvalue);
+	Size _getSize(property *pp);
 
 	virtual ~cview();
 

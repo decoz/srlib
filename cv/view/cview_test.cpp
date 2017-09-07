@@ -13,12 +13,14 @@ using namespace cv;
 using namespace srlib;
 
 int main( int argc, char **argv ){
+	printf("start cview_test\n");
+
 
 	Mat img = imread("images/1.jpg");
-
 	cview::turnon("cview", "xyhistogram");
-	cview::show("zview", img);
+	cview::show("cview", img);
 
+	fflush(stdout);
 	waitKey(0);
 	return  0;
 
