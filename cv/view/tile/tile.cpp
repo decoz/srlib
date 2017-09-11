@@ -7,8 +7,10 @@
 
 #include "tile.h"
 namespace srlib{
+
 tile::tile() {
 	joints.push_back(Point(0,0));
+	maxx = maxy = 0;
 }
 
 tile::~tile() {
@@ -61,11 +63,60 @@ Mat tile::toBGR(Mat img){
 	return img;
 }
 
+bool tile::available(Rect r, Point p){
+
+	Rect tr(p.x, p.y, r.width, r.height);
+	for(vector<Rect>::iterator i=rects.begin(); i!=rects.end(); i++){
+		//if(!interRect(tr, *i).width) return false;
+
+		r = interRect(tr, *i);
+		//printf("/r.w:%d h:%d ",r.width, r.height);
+		if(r.width > 0 && r.height > 0)  return false;
+
+	}
+	return true;
+}
+
+
+
 void tile::attach(short opt, Mat img){
 
+	typedef vector<Point>::iterator Iter_point;
+	Rect r(0,0,img.cols,img.rows);
 
+	Iter_point i_minp;
+	double minval = 0;
 
+	printf("jp list:");
+	for(vector<Point>::iterator i=joints.begin(); i!=joints.end(); i++){
+		Point p = *i;
+		printf("%d,%d.", p.x, p.y);
+		if(!available(r,p)) continue;
 
+		int tx = (p.x + r.width < maxx) ? maxx : p.x + r.width,
+			ty = (p.y + r.height < maxy) ? maxy : p.y + r.height;
+
+		printf("[%d,%d] ",tx,ty);
+		if(!minval || tx * ty < minval)
+			i_minp = i, minval = tx * ty;
+
+	}
+	printf("\n");
+
+	if(minval > 0 ) {
+		Point jp = *i_minp;
+		joints.erase(i_minp);
+		joints.push_back(Point(jp.x + r.width, jp.y));
+		joints.push_back(Point(jp.x , jp.y + r.height));
+
+		maxx = (jp.x + r.width < maxx) ? maxx : jp.x + r.width,
+		maxy = (jp.y + r.height < maxy) ? maxy : jp.y + r.height;
+
+		rects.push_back( Rect(jp.x, jp.y, r.width, r.height));
+		imgs.push_back(img);
+
+	}
+	printf("new max : %d,%d\n", maxx, maxy);
 
 
 }
@@ -93,4 +144,36 @@ Mat tile::mat(){
 
 	return img;
 }
+
+
+Rect tile::interRect(Rect r1, Rect r2){
+/*
+ * 두 영역중에 교차영역을 계산
+ * 교차  영역이 없으면 R(0,0,0,0) 을 리턴
+ */
+	Rect inter_r;
+	Rect lft_r, rgt_r, up_r, dn_r; //  좌/우  상/하
+
+	if(r2.x <= r1.x + r1.width && r1.x <= r2.x + r2.width  ){
+
+		int a = r1.x > r2.x? r1.x : r2.x;
+		int b = r1.x + r1.width < r2.x + r2.width ? r1.x + r1.width : r2.x + r2.width;
+		inter_r.x = a;
+		inter_r.width = b - a;
+
+	}else return  Rect(0,0,0,0);
+
+	if(r2.y <= r1.y + r1.height && r1.y <= r2.y + r2.height  ){
+
+		int a = r1.y > r2.y? r1.y : r2.y;
+		int b = r1.y + r1.height < r2.y + r2.height ? r1.y + r1.height : r2.y + r2.height;
+		inter_r.y = a;
+		inter_r.height = b - a;
+
+	}else return  Rect(0,0,0,0);
+
+	return inter_r;
+
+};
+
 } // end of srlib

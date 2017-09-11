@@ -31,9 +31,9 @@ namespace srlib{
 
 class tile {
 private:
-	int maxw, maxh;
-	int winw, winh; // 창의 넓이 높이를 각각 또는 동시에 fix 해둠  free 인 경우 0 으로 세팅
-	int fixw, fixh; 		// image 의 넓이 높이를 각각 또는 동시에 fix 해둠
+	int maxx, maxy;
+	int winw, winh; 	// 창의 넓이 높이를 각각 또는 동시에 fix 해둠  free 인 경우 0 으로 세팅
+	int fixw, fixh; 	// image 의 넓이 높이를 각각 또는 동시에 fix 해둠
 
 	vector <Rect> rects;
 	vector <Mat> imgs;
@@ -45,8 +45,7 @@ private:
 	Mat 	toBGR(Mat img);
 
 	bool	available(Rect r, Point p);	// r영역을 p 영역에 접합 가능한가 확인
-	bool 	intersect(Rect r1, Rect r2); // r1과 r2가 교차하는가 확인
-
+	Rect 	interRect(Rect r1, Rect r2); // r1과 r2의 교집합영역을 추출
 
 public:
 	tile();

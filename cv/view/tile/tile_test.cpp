@@ -21,16 +21,21 @@ int main( int argc, char **argv ){
 	char fname[100];
 	for(int i=1; i<=11; i++){
 		sprintf(fname, "images/tiles/t%02d.png",i);
-		printf(":%s\n",fname);
+
 		destroyWindow("tile");
 
 		Mat tileimg = imread(fname);
+		printf(":%s /%dx%d \n",fname, tileimg.cols, tileimg.rows);
+
 		t.attach(TILE_H, tileimg);
 
+		imshow("tiles",t.mat());
+		fflush(stdout);
+		if( waitKey(0) == 'q') break;
 	}
+
 	imshow("tiles",t.mat());
 	waitKey(0);
-
 	return  0;
 
 }
