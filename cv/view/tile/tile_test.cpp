@@ -16,7 +16,7 @@ int main( int argc, char **argv ){
 	printf("start tile_test\n");
 
 	tile t;
-
+	t.margin = 10;
 
 	char fname[100];
 	for(int i=1; i<=11; i++){

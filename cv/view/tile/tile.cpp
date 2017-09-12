@@ -11,6 +11,7 @@ namespace srlib{
 tile::tile() {
 	joints.push_back(Point(0,0));
 	maxx = maxy = 0;
+	margin = 0;
 }
 
 tile::~tile() {
@@ -82,26 +83,26 @@ bool tile::available(Rect r, Point p){
 void tile::attach(short opt, Mat img){
 
 	typedef vector<Point>::iterator Iter_point;
-	Rect r(0,0,img.cols,img.rows);
+	Rect r(0,0,img.cols + margin,img.rows + margin);
 
 	Iter_point i_minp;
 	double minval = 0;
 
-	//printf("jp list:");
+	printf("jp list:");
 	for(vector<Point>::iterator i=joints.begin(); i!=joints.end(); i++){
 		Point p = *i;
-		//printf("%d,%d.", p.x, p.y);
+		printf("%d,%d.", p.x, p.y);
 		if(!available(r,p)) continue;
 
 		int tx = (p.x + r.width < maxx) ? maxx : p.x + r.width,
 			ty = (p.y + r.height < maxy) ? maxy : p.y + r.height;
 
-		//printf("[%d,%d] ",tx,ty);
+		printf("[%d,%d] ",tx,ty);
 		if(!minval || tx * ty < minval)
 			i_minp = i, minval = tx * ty;
 
 	}
-	//     printf("\n");
+	printf("\n");
 
 	if(minval > 0 ) {
 		Point jp = *i_minp;
@@ -138,7 +139,6 @@ Mat tile::mat(){
 
 	if(p.x == 0 || p.y == 0 || !imgs.size()) return Mat(100,100, CV_8UC1);
 
-
 	Mat img(p.y, p.x, imgs[0].type());
 	img.setTo(0);
 
@@ -148,7 +148,9 @@ Mat tile::mat(){
 		fflush(stdout);
 		int c1 = imgs[i].type(), c2 = img(r).type();
 
-		imgs[i].copyTo( img(r) );
+		Rect  nr(r.x, r.y, r.width - margin ,  r.height - margin);
+
+		 imgs[i].copyTo( img(nr) );
 		//imshow("imgs",imgs[i]);	if ( waitKey(0) == 'q') break;
 	}
 
