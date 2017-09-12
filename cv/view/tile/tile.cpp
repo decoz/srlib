@@ -101,7 +101,7 @@ void tile::attach(short opt, Mat img){
 			i_minp = i, minval = tx * ty;
 
 	}
-	//printf("\n");
+	//     printf("\n");
 
 	if(minval > 0 ) {
 		Point jp = *i_minp;
@@ -116,7 +116,7 @@ void tile::attach(short opt, Mat img){
 		imgs.push_back(img);
 
 	}
-	//printf("new max : %d,%d\n", maxx, maxy);
+	printf("new max : %d,%d\n", maxx, maxy);
 
 
 }
@@ -131,15 +131,25 @@ void tile::fixSize(int w, int h){
 }
 
 Mat tile::mat(){
+
+	printf("t.size:%d\n", rects.size() );
 	Point p = getMaxXY();
 
-	if(p.x == 0 || p.y == 0) return Mat(100,100, CV_8UC3);
 
-	Mat img(p.y, p.x, CV_8UC3);
+	if(p.x == 0 || p.y == 0 || !imgs.size()) return Mat(100,100, CV_8UC1);
+
+
+	Mat img(p.y, p.x, imgs[0].type());
+	img.setTo(0);
 
 	for(int i=0;i<rects.size();i++){
 		Rect r = rects[i];
+		printf("%d: -> %d,%d,%d,%d\n", i, r.x, r.y, r.width, r.height);
+		fflush(stdout);
+		int c1 = imgs[i].type(), c2 = img(r).type();
+
 		imgs[i].copyTo( img(r) );
+		//imshow("imgs",imgs[i]);	if ( waitKey(0) == 'q') break;
 	}
 
 	return img;

@@ -35,6 +35,7 @@ private:
 	int winw, winh; 	// 창의 넓이 높이를 각각 또는 동시에 fix 해둠  free 인 경우 0 으로 세팅
 	int fixw, fixh; 	// image 의 넓이 높이를 각각 또는 동시에 fix 해둠
 
+
 	vector <Rect> rects;
 	vector <Mat> imgs;
 	vector <Point> joints;
@@ -48,6 +49,7 @@ private:
 	Rect 	interRect(Rect r1, Rect r2); // r1과 r2의 교집합영역을 추출
 
 public:
+	int margin;
 	tile();
 	virtual ~tile();
 

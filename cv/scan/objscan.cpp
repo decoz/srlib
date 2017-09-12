@@ -163,14 +163,14 @@ Rect  obj::getRect(){
 	if(direction) {
 		r.x = sl;
 		r.y = min;
-		r.width = el - sl;
-		r.height = max - min;
+		r.width = el - sl + 1;
+		r.height = max - min +  1;
 	}
 	else {
 		r.x = min;
 		r.y = sl;
-		r.width = max - min;
-		r.height = el - sl;
+		r.width = max - min + 1;
+		r.height = el - sl + 1;
 	}
 
 
