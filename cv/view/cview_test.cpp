@@ -1,4 +1,3 @@
-
 /*
  * test_view.cpp
  *
@@ -17,7 +16,7 @@ int main( int argc, char **argv ){
 	printf("start cview_test\n");
 
 
-	Mat img = imread("images/1.jpg");
+	Mat img = imread(argv[1]);
 	cview::turnon("cview", "xyhistogram");
 	cview::show("cview", img);
 
