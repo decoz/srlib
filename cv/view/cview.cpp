@@ -77,6 +77,8 @@ void cview::_show(char *name, Mat src){
 
 			Mat vsrc = view(Rect(0,0,src.cols, src.rows));
 			src.copyTo(vsrc);
+
+			draw_denshist(src, view, 100);
 		}
 	}
 
@@ -108,9 +110,62 @@ void cview::_setProperty(char *name, char *pname,const char *pvalue){
 			pp->xyhistogram = false;
 		}
 	}
+}
+
+Mat cview::draw_denshist(Mat src, Mat target, int height){
+	Mat gray;
 
 
+	/*
+	if(src.channels() > 1) cvtColor(src,gray, CV_BGR2GRAY);
+	else gray = src;
+	*/
+
+	Mat xhist, yhist;
+	reduce(src,xhist,0,CV_REDUCE_AVG);
+	reduce(src,yhist,1,CV_REDUCE_AVG);
+
+	int ch = xhist.channels();
+
+
+	for(int d=0; d<2; d++)
+	for(int i=0; i<( d? xhist.cols : yhist.rows ); i++){
+
+		//Point sp = d? Point(i, src.rows) : Point( src.cols, i );
+
+		Vec3b v = d? xhist.at<Vec3b>(0,i) : yhist.at<Vec3b>(i,0);
+
+
+		int sv = 0;
+		for(int c=0; c<ch; c++){
+			Scalar color(100,0,0);
+			color.val[c] = 150;
+			//Point ep = d? 	Point(i,  src.rows + v[c] * height / 255) :	Point( src.cols + v[c] * height / 255, i) ;
+			Vec3b colorv = Vec3b(color.val[0], color.val[1], color.val[2]);
+
+
+			if(d)	target.at<Vec3b>( src.rows + v[c] * height / 255, i ) = colorv;
+			else 	target.at<Vec3b>( i, src.cols + v[c] * height / 255 ) = colorv;
+
+			sv += v[c];
+		}
+
+		if( d )	target.at<Vec3b>( src.rows + sv * height / 3 / 255, i )= Vec3b(255,255,255);
+		else target.at<Vec3b>( i, src.cols + sv * height / 3 / 255 )= Vec3b(255,255,255);
+
+	}
+
+
+	printf("[%d] %d,%d\n", ch, xhist.rows, xhist.cols);
+
+	printf("[%d] %d,%d\n", ch, yhist.rows, yhist.cols);
+	fflush(stdout);
+	return gray;
 
 }
 
+
+
+
 } // end of srlib
+

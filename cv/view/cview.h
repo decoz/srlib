@@ -1,3 +1,4 @@
+
 /*
  * dsCView.h
  *
@@ -63,6 +64,7 @@ public:
 		getIt()->_show(name, img);
 	}
 
+	Mat draw_denshist(Mat src, Mat target,  int height);
 	void _show(char *name, Mat img);
 	void _show_mouse_pos(char *name);
 	void _setProperty(char *name, char *pname,const char *pvalue);
@@ -75,3 +77,4 @@ public:
 }
 
 #endif /* OPENCV_LAB_DCCVIEW_DCCVIEW_H_ */
+
