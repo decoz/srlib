@@ -17,6 +17,7 @@ int main( int argc, char **argv ){
 
 	tile t;
 	t.margin = 10;
+	t.winw = 500;
 
 	char fname[100];
 	for(int i=1; i<=11; i++){

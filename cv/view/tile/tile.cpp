@@ -10,7 +10,9 @@ namespace srlib{
 
 tile::tile() {
 	joints.push_back(Point(0,0));
+
 	maxx = maxy = 0;
+	winw = winh = 0;
 	margin = 0;
 }
 
@@ -67,6 +69,13 @@ Mat tile::toBGR(Mat img){
 bool tile::available(Rect r, Point p){
 
 	Rect tr(p.x, p.y, r.width, r.height);
+
+
+	if( 	( winw > 0 &&  p.x + r.width > winw ) ||
+		( winh > 0 &&  p.y + r.height > winh ) )
+		return false;
+
+
 	for(vector<Rect>::iterator i=rects.begin(); i!=rects.end(); i++){
 		//if(!interRect(tr, *i).width) return false;
 
@@ -100,8 +109,10 @@ void tile::attach(short opt, Mat img){
 		printf("[%d,%d] ",tx,ty);
 		if(!minval || tx * ty < minval)
 			i_minp = i, minval = tx * ty;
-
 	}
+
+
+
 	printf("\n");
 
 	if(minval > 0 ) {

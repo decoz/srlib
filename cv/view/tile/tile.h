@@ -32,16 +32,13 @@ namespace srlib{
 class tile {
 private:
 	int maxx, maxy;
-	int winw, winh; 	// 창의 넓이 높이를 각각 또는 동시에 fix 해둠  free 인 경우 0 으로 세팅
-	int fixw, fixh; 	// image 의 넓이 높이를 각각 또는 동시에 fix 해둠
-
 
 	vector <Rect> rects;
 	vector <Mat> imgs;
 	vector <Point> joints;
 
 
-	Point  	getMaxXY();
+	Point 	getMaxXY();
 	Mat  	adjustSize(Mat img);
 	Mat 	toBGR(Mat img);
 
@@ -50,6 +47,9 @@ private:
 
 public:
 	int margin;
+	int winw, winh; 	// 창의 넓이 높이를 각각 또는 동시에 fix 해둠  free 인 경우 0 으로 세팅
+	int fixw, fixh; 	// image 의 넓이 높이를 각각 또는 동시에 fix 해둠
+
 	tile();
 	virtual ~tile();
 
