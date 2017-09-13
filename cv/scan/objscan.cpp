@@ -49,7 +49,7 @@ void objscan::draw_all(Mat  gimg, Scalar color){
  */
 void objscan::scan(int d){
 	vector <obj> current, next;
-	bool dmsg = true;
+	bool dmsg = false;
 	for(int y=0;y<(d? gray.cols:gray.rows);y++){
 		for(int x=0, s=-1; x<=(d? gray.rows:gray.cols);x++)
 			if(  x < (d? gray.rows:gray.cols) && (d? gray.at<uchar>(x,y) : gray.at<uchar>(y,x) ) > 127 ){
