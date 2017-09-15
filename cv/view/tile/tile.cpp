@@ -97,23 +97,23 @@ void tile::attach(short opt, Mat img){
 	Iter_point i_minp;
 	double minval = 0;
 
-	printf("jp list:");
+	//printf("jp list:");
 	for(vector<Point>::iterator i=joints.begin(); i!=joints.end(); i++){
 		Point p = *i;
-		printf("%d,%d.", p.x, p.y);
+		//printf("%d,%d.", p.x, p.y);
 		if(!available(r,p)) continue;
 
 		int tx = (p.x + r.width < maxx) ? maxx : p.x + r.width,
 			ty = (p.y + r.height < maxy) ? maxy : p.y + r.height;
 
-		printf("[%d,%d] ",tx,ty);
+		//printf("[%d,%d] ",tx,ty);
 		if(!minval || tx * ty < minval)
 			i_minp = i, minval = tx * ty;
 	}
 
 
 
-	printf("\n");
+	//printf("\n");
 
 	if(minval > 0 ) {
 		Point jp = *i_minp;
@@ -128,7 +128,7 @@ void tile::attach(short opt, Mat img){
 		imgs.push_back(img);
 
 	}
-	printf("new max : %d,%d\n", maxx, maxy);
+	//printf("new max : %d,%d\n", maxx, maxy);
 
 
 }
@@ -144,7 +144,7 @@ void tile::fixSize(int w, int h){
 
 Mat tile::mat(){
 
-	printf("t.size:%d\n", rects.size() );
+	//printf("t.size:%d\n", rects.size() );
 	Point p = getMaxXY();
 
 
@@ -155,13 +155,12 @@ Mat tile::mat(){
 
 	for(int i=0;i<rects.size();i++){
 		Rect r = rects[i];
-		printf("%d: -> %d,%d,%d,%d\n", i, r.x, r.y, r.width, r.height);
+		//printf("%d: -> %d,%d,%d,%d\n", i, r.x, r.y, r.width, r.height);
 		fflush(stdout);
 		int c1 = imgs[i].type(), c2 = img(r).type();
 
 		Rect  nr(r.x, r.y, r.width - margin ,  r.height - margin);
-
-		 imgs[i].copyTo( img(nr) );
+		imgs[i].copyTo( img(nr) );
 		//imshow("imgs",imgs[i]);	if ( waitKey(0) == 'q') break;
 	}
 
