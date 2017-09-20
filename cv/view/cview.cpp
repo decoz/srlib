@@ -13,6 +13,9 @@ namespace srlib {
 cview *cview::that = NULL;
 Scalar cview::textcolor = Scalar(255,0,255);
 
+
+
+
 void cview::handle_mouse(int evt, int x, int y, int flags, void *param){
 
 	char *name = (char*) param;
@@ -33,10 +36,50 @@ void cview::handle_mouse(int evt, int x, int y, int flags, void *param){
 
 		imshow(name,img);
 		backup.copyTo(img(text_rect));
-
-
 	}
 }
+
+
+
+void cview::handle_dragrect(int evt, int x, int y, int flags, void *param){
+
+	char *name = (char*) param;
+
+	cview *it = cview::getIt();
+	Mat img = it->imgs[name];
+	property *pp = it->pmap[name];
+
+	switch(evt){
+	case CV_EVENT_MOUSEMOVE:
+		break;
+	case CV_EVENT_LBUTTONDOWN:
+		pp->dragrect = Rect(x,y,0,0);
+		printf("lbdown\n"); break;
+	case CV_EVENT_LBUTTONUP:
+		Rect dr = pp->dragrect;;
+		pp->dragrect = Rect(
+			dr.x < x ? dr.x : x,
+			dr.y < y ? dr.y : y,
+			abs( dr.x - x ),
+			abs( dr.y - y )
+		);
+
+		dr = pp->dragrect;
+		printf("rect [%d,%d,%d,%d]\n", dr.x, dr.y, dr.width, dr.height);
+		pp->evt_dragrect(img, pp);
+		break;
+	}
+
+
+
+	fflush(stdout);
+}
+
+
+
+
+
+
 
 cview::cview() {
 	// TODO Auto-generated constructor stub
@@ -68,30 +111,56 @@ void cview::_show(char *name, Mat src){
 		imgs[name] = view = src;
 	} else view = imgs[name];
 
+	namedWindow(name);
+
 	if( pmap.find(name) != pmap.end() ) {
 		property p = *pmap[name];
 		if(p.xyhistogram) {
 			Size vsize = Size(src.cols + 100, src.rows + 100);
 			if( view.size() != vsize )
 				imgs[name] = view = Mat( vsize,  src.type());
-
 			view.setTo(0);
 			Mat vsrc = view(Rect(0,0,src.cols, src.rows));
 			src.copyTo(vsrc);
-
 			draw_denshist(src, view, 100);
 		}
+
+		if(p.xyposition) {
+			setMouseCallback(name, cview::handle_mouse, (void*)name);
+		}
+
+		if(p.evt_dragrect != NULL){
+			setMouseCallback(name, cview::handle_dragrect, (void*)name);
+		}
+
 	}
 
 	imshow(name, view);
-	setMouseCallback(name, cview::handle_mouse, (void*)name);
+
 }
 
 void init_property(property *pp){
-
 	pp->xyhistogram = false;
+	pp->xyposition = false;
+
+	pp->evt_dragrect = NULL;
 
 }
+
+void cview::_setEvent(char *name, char *ename, Handler handler ){
+	property *pp;
+	if( pmap.find(name) == pmap.end() ) {
+		pp = new property;
+		init_property(pp);
+		pmap[name] = pp;
+	} pp = pmap[name];
+
+	if( !strcmp(ename,"evt_dragrect") ){
+		pp->evt_dragrect = handler;
+	}
+}
+
+
 
 void cview::_setProperty(char *name, char *pname,const char *pvalue){
 	printf("get %s / %s  : %s\n", name, pname, pvalue);
@@ -102,6 +171,10 @@ void cview::_setProperty(char *name, char *pname,const char *pvalue){
 		init_property(pp);
 		pmap[name] = pp;
 	} pp = pmap[name];
+
+	if( !strcmp(pname,"xyposition") )
+		if( !strcmp(pvalue,"true") ) pp->xyposition = true;
+		else  pp->xyposition = false;
 
 	if( !strcmp(pname,"xyhistogram") ){
 		if( !strcmp(pvalue, "true") ){

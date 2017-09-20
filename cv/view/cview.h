@@ -28,8 +28,18 @@ using namespace std;
 namespace srlib{
 
 
+typedef void (*Handler)(Mat img, void* userdata); // event handler
+
+
+
 typedef struct _property{
-	bool xyhistogram;
+	Rect dragrect;
+
+
+	bool xyhistogram;				// xy histogram  À» Ãâ·Â
+	bool xyposition;
+
+	Handler evt_dragrect; 	// rectangle drag event
 } property;
 
 class cview {
@@ -41,7 +51,7 @@ public:
 	static cview* that;
 	static Scalar textcolor;
 	static void handle_mouse(int evt, int x, int y, int flags, void *param);
-
+	static void handle_dragrect(int evt, int x, int y, int flags, void *param);
 
 	map<string, Mat> imgs;
 	map<string, property*> pmap;
@@ -60,6 +70,11 @@ public:
 		getIt()->_setProperty(name, pname, pvalue);
 	}
 
+	static void handle(char *name, char *ename, Handler handler ){
+		getIt()->_setEvent(name, ename, handler);
+	}
+
+
 	static void show(char *name, Mat img){
 		getIt()->_show(name, img);
 	}
@@ -68,6 +83,8 @@ public:
 	void _show(char *name, Mat img);
 	void _show_mouse_pos(char *name);
 	void _setProperty(char *name, char *pname,const char *pvalue);
+	void _setEvent(char *name, char *ename, Handler handler );
+
 	Size _getSize(property *pp);
 
 	virtual ~cview();

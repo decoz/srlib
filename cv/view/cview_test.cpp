@@ -12,12 +12,28 @@
 using namespace cv;
 using namespace srlib;
 
+
+void rect_read( Mat img, void *ptr){
+	property *pp = (property*)ptr;
+	Rect r = pp->dragrect;
+
+	//printf("!!!\n");
+	printf("read rect %d,%d,%d,%d done!\n", r.x, r.y, r.width, r.height);;
+
+}
+
+
 int main( int argc, char **argv ){
 	printf("start cview_test\n");
 
 	for(int i=1;i<argc;i++){
 		Mat img = imread(argv[1] /*,CV_LOAD_IMAGE_GRAYSCALE */);
+
+
 		cview::turnon("cview", "xyhistogram");
+		//cview::turnon("cview", "xyposition");
+
+		cview::handle("cview", "evt_dragrect", rect_read);
 		cview::show("cview", img);
 
 		fflush(stdout);
