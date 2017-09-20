@@ -10,6 +10,7 @@
 #include "cview.h"
 
 using namespace cv;
+using namespace std;
 using namespace srlib;
 
 
@@ -18,8 +19,14 @@ void rect_read( Mat img, void *ptr){
 	Rect r = pp->dragrect;
 
 	//printf("!!!\n");
-	printf("read rect %d,%d,%d,%d done!\n", r.x, r.y, r.width, r.height);;
 
+	if(r.width * r.height > 25 ) {
+		printf("read rect %d,%d,%d,%d done!\n", r.x, r.y, r.width, r.height);;
+		cout << "input label:";;
+		string label("");
+		cin >> label;
+		cout << "label is " << label;
+	}
 }
 
 
