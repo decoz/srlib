@@ -93,8 +93,6 @@ void cview::handle_dragrect(int evt, int x, int y, int flags, void *param){
 
 	switch(evt){
 	case CV_EVENT_MOUSEMOVE:
-
-
 		if(pp->dragging) {
 			if(!pp->dragsave.empty()) resotre(img, dr, pp->dragsave);
 			dr = 	pos2rect(Point(dr.x, dr.y), Point(x,y));
@@ -113,13 +111,13 @@ void cview::handle_dragrect(int evt, int x, int y, int flags, void *param){
 		pp->dragrect = pos2rect(Point(dr.x,dr.y), Point(x,y));
 		dr = pp->dragrect;
 		printf("rect [%d,%d,%d,%d]\n", dr.x, dr.y, dr.width, dr.height);
-		pp->evt_dragrect(img, pp);
 
 		if(!pp->dragsave.empty()) resotre(img, dr, pp->dragsave);
 		imshow(name, img);
-
 		pp->dragsave.release();
 		pp->dragging = false;
+
+		pp->evt_dragrect(img, pp);
 
 		break;
 	}
@@ -198,7 +196,7 @@ void init_property(property *pp){
 	pp->xyposition = false;
 
 	pp->evt_dragrect = NULL;
-
+	pp->dragging = false;
 }
 
 void cview::_setEvent(char *name, char *ename, Handler handler ){
