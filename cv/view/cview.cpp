@@ -14,7 +14,38 @@ cview *cview::that = NULL;
 Scalar cview::textcolor = Scalar(255,0,255);
 
 
+/**
+ * @brief rect 윤곽 라인의  픽셀정보를 저장
+ * @details
+ * 저장방식은 다음과 같이나선구조로 순서대로 입력된다.
+ *  *
+ *  AAAB
+ *  D   B
+ *  D   B
+ *  DCCC
+ *
+ */
 
+Mat save(Mat img, Rect r){
+
+	/*
+	int  sz = (  r.width + r.height - 1 ) * 2;
+	Mat bk(0,0,img.type());
+
+	bk.push_back( img( Rect(r.x, r.y, r.width-1, 1) ));
+	bk.push_back( img( Rect(r.x + r.width, r.y, 1, r.height-1 ) ));
+	bk.push_back( img( Rect(r.x+1, r.y + r.height, r.width-1, 1) ));
+	bk.push_back( img( Rect(r.x, r.y, 1, r.height-1 ) ));
+	*/
+	return img(r).clone();
+
+}
+
+void resotre(Mat img, Rect r, Mat arr ){
+
+	arr.copyTo(img(r));
+
+}
 
 void cview::handle_mouse(int evt, int x, int y, int flags, void *param){
 
@@ -39,7 +70,14 @@ void cview::handle_mouse(int evt, int x, int y, int flags, void *param){
 	}
 }
 
-
+inline Rect pos2rect(Point p1, Point p2){
+	return  Rect(
+			p1.x < p2.x ? p1.x :p2.x,
+			p1.y < p2.y ? p1.y :p2.y,
+			abs( p1.x - p2.x ),
+			abs( p1.y - p2.y )
+		);
+}
 
 void cview::handle_dragrect(int evt, int x, int y, int flags, void *param){
 
@@ -49,24 +87,40 @@ void cview::handle_dragrect(int evt, int x, int y, int flags, void *param){
 	Mat img = it->imgs[name];
 	property *pp = it->pmap[name];
 
+
+	Rect dr = pp->dragrect;
+	Point dp(dr.x, dr.y) , cp(x,y);
+
 	switch(evt){
 	case CV_EVENT_MOUSEMOVE:
+
+
+		if(pp->dragging) {
+			if(!pp->dragsave.empty()) resotre(img, dr, pp->dragsave);
+			dr = 	pos2rect(Point(dr.x, dr.y), Point(x,y));
+			pp->dragsave =  save(img, dr );
+			rectangle(img, dr, Scalar(255,255,255) );
+			pp->dragrect = dr;
+			imshow(name, img);
+		}
 		break;
 	case CV_EVENT_LBUTTONDOWN:
 		pp->dragrect = Rect(x,y,0,0);
+		pp->dragging = true;
 		printf("lbdown\n"); break;
-	case CV_EVENT_LBUTTONUP:
-		Rect dr = pp->dragrect;;
-		pp->dragrect = Rect(
-			dr.x < x ? dr.x : x,
-			dr.y < y ? dr.y : y,
-			abs( dr.x - x ),
-			abs( dr.y - y )
-		);
 
+	case CV_EVENT_LBUTTONUP:
+		pp->dragrect = pos2rect(Point(dr.x,dr.y), Point(x,y));
 		dr = pp->dragrect;
 		printf("rect [%d,%d,%d,%d]\n", dr.x, dr.y, dr.width, dr.height);
 		pp->evt_dragrect(img, pp);
+
+		if(!pp->dragsave.empty()) resotre(img, dr, pp->dragsave);
+		imshow(name, img);
+
+		pp->dragsave.release();
+		pp->dragging = false;
+
 		break;
 	}
 

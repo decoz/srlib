@@ -33,8 +33,9 @@ typedef void (*Handler)(Mat img, void* userdata); // event handler
 
 
 typedef struct _property{
-	Rect dragrect;
-
+	Rect 	dragrect;
+	Mat	dragsave;
+	bool 	dragging;
 
 	bool xyhistogram;				// xy histogram  À» Ãâ·Â
 	bool xyposition;
