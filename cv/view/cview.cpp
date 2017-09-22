@@ -159,11 +159,15 @@ void cview::_show(char *name, Mat src){
 
 
 	Mat view;
+	/*
 	if( imgs.find(name) ==  imgs.end() ){
 		imgs[name] = view = src;
 	} else view = imgs[name];
-
+	*/
+	imgs[name] = view = src;
 	namedWindow(name);
+
+
 
 	if( pmap.find(name) != pmap.end() ) {
 		property p = *pmap[name];
