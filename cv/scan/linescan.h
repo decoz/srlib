@@ -58,6 +58,8 @@ class linescan : public objscan {
 
 
 	Path merge_path(Path ph1, Path ph2 , bool hReverse , bool tReverse);
+	vector <Path>  assemble_expath(vector <Path> paths);
+
 
 	vector <Path> 	scanPath(vector <Xobj*> xobjs, bool mode);
 	void scan_rvalue(Path ph);
@@ -71,6 +73,8 @@ public:
 	int 	line_max_width, line_min_length;			// line 추출시 넓이 임계값,  line 추출시 최소 길이
 	int 	assemble_range;								// 병합시 점들간의 최대거리
 	float	assemble_thresh;							// line 추출시 최소 길이
+
+	bool  merge_other_obj;							// 이미지상으로 연결된 영역만 잇는다.
 
 	bool debug;
 	Mat 	bimg;

@@ -53,6 +53,8 @@ linescan::linescan() {
 	// TODO Auto-generated constructor stub
 	debug = false;
 
+	merge_other_obj = true;
+
 	line_max_width = 40;	// line 추출시 넓이 임계값
 	line_min_length = 30;	// line 추출시 최소 길이
 
@@ -388,7 +390,6 @@ void linescan::assemble_path(Xobj *xobj){
 		}
 
 
-
 		// 가장 가까운 점부터 연결 가능 점검 후 가능시 연결
 		int n=0;
 		for(; n<c; n++){
@@ -396,7 +397,7 @@ void linescan::assemble_path(Xobj *xobj){
 			//printf(" ~ %s : %.2f\n", tostr(*iph), rels[n].r );
 
 			if( rels[n].r < assemble_range &&
-				( rels[n].r < 5 || check_connected(bimg,  *i, *iph, 0.9 ) ) &&
+				( rels[n].r < 5 || !merge_other_obj || check_connected(bimg,  *i, *iph, 0.9 ) ) &&
 				linkability( *i, *iph, assemble_range ) > assemble_thresh )
 			{
 					*i = merge_path(*i, *iph, hReverse, tReverse);
@@ -539,6 +540,91 @@ void linescan::calc_path(Xobj *xobj){
 }
 
 
+/**
+ *	@brief obj 간의 path를 추출..
+ *
+ *
+ */
+vector <Path>  linescan::assemble_expath(vector <Path> paths){
+
+	printf("assemble_expath for %d paths \n", paths.size());
+	bool debug = true;
+	int l_thresh =  assemble_range ;
+
+	typedef struct {	// 관계 계산용 구조체
+		Iter_path iph;
+		float r;
+	} Rel;
+
+	Rel *rels = new Rel[paths.size()];
+
+
+	for(Iter_path i = paths.begin(); i != paths.end();  ){
+
+		Point ih = *(i->begin()), it = *(i->end() -1 ) ;
+		int hReverse = 0, tReverse = 0; 	// 0: right , 1:left
+
+		// 가까운 공유점을 가진 라인들 탐색
+		int c = 0;
+		for(Iter_path j = paths.begin(); j != paths.end(); j++){
+			if(  i == j ) continue;
+
+			Point jh = *(j->begin()), jt = *(j->end() -1 ) ;
+			int o = order_points(ih, it, jh, jt);
+			float r = range(it,jh);
+
+			Rel _rel = {j,r};
+			//Rel _rel;
+
+			if( r <  assemble_range) rels[c++] = _rel ;
+
+		}
+
+		// 정렬
+
+		Rel trel;
+		for(int n=0; n<c; n++)	for(int m=0; m<c-n-1; m++ )
+			if( rels[m].r > rels[m+1].r ) trel = rels[m], rels[m] = rels[m+1], rels[m+1] = trel;
+
+		if(debug){
+			printf("%s \n", tostr(*i));
+			for(int n=0; n<c; n++) {
+				Path ph = *(rels[n].iph);
+				//printf(" - %s : %.2f\n", tostr(ph), rels[n].r );
+			}
+		}
+
+
+		// 가장 가까운 점부터 연결 가능 점검 후 가능시 연결
+		int n=0;
+		for(; n<c; n++){
+			Iter_path iph = rels[n].iph;
+			//printf(" ~ %s : %.2f\n", tostr(*iph), rels[n].r );
+
+			if( rels[n].r < assemble_range && linkability( *i, *iph, assemble_range ) > assemble_thresh )
+			{
+					*i = merge_path(*i, *iph, hReverse, tReverse);
+					paths.erase( iph );
+					break;
+			}
+		}
+
+		// 연결 실패시 다음 라인으로
+		if( n == c ) i++;
+
+	}
+
+	if(debug){
+		printf("\t");
+		for(Iter_path j = paths.begin(); j != paths.end(); j++){
+			printf("%d-", j->size());
+		} printf("\n");
+	}
+
+	return paths;;
+
+
+}
 
 void linescan::draw_path(Mat img, Path ph, Scalar color){
 
@@ -640,8 +726,8 @@ vector <Xobj*> linescan::scanX(Mat gimg){
 /** @brief 패스 처리루틴을 통해 통합 패스를 생성 */
 
 vector <Path>  linescan::scanPath(vector <Xobj*> xobjs, bool mode ){ // mode 0 : etch, 1: con
-	vector <Path>  paths;
-
+	//vector <Path>  paths;
+	paths.clear();
 	for(Iter_xobj ix = xobjs.begin(); ix != xobjs.end(); ix++ ){
 
 		Xobj *xobj = *ix;
@@ -650,7 +736,7 @@ vector <Path>  linescan::scanPath(vector <Xobj*> xobjs, bool mode ){ // mode 0 :
 
 		vector <Path> dpaths;
 		for(Iter_path i = xobj->paths.begin(); i != xobj->paths.end(); i++ )
-			dpaths.push_back(srlib::douglasPeucker(*i, 10 , srlib::MODE_ADP ) );
+			dpaths.push_back(srlib::douglasPeucker(*i, 5 , srlib::MODE_ADP ) );
 		xobj->paths = dpaths;
 
 		assemble_path(xobj);
@@ -659,6 +745,10 @@ vector <Path>  linescan::scanPath(vector <Xobj*> xobjs, bool mode ){ // mode 0 :
 			paths.push_back(*i);
 
 	}
+
+	if(merge_other_obj) paths = assemble_expath(paths);
+
+
 	printf("extracted path count:%d\n", paths.size());
 	return paths;
 
