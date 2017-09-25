@@ -548,7 +548,7 @@ void linescan::calc_path(Xobj *xobj){
 vector <Path>  linescan::assemble_expath(vector <Path> paths){
 
 	printf("assemble_expath for %d paths \n", paths.size());
-	bool debug = true;
+	bool debug = false;
 	int l_thresh =  assemble_range ;
 
 	typedef struct {	// 관계 계산용 구조체

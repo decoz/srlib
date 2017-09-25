@@ -67,18 +67,16 @@ void zoomview::handle_mouse(int evt, int x, int y, int flags, void *param){
 
 
 
-	 if(	flags& CV_EVENT_FLAG_CTRLKEY  &&
-		( evt == CV_EVENT_LBUTTONDOWN ||   evt == CV_EVENT_RBUTTONDOWN ) ){
+	 if(	 evt ==  CV_EVENT_MOUSEWHEEL ){
 
 		 int cx = ws.width / 2, cy = ws.height /2 ;
 		 int mx = ( x - cx  ) , my = (y - cy ) ;
 
 		 zi->pt.x += mx, zi->pt.y += my;
 
-		 switch( evt ){
-		 case CV_EVENT_LBUTTONDOWN : zi->zrate *= 1.2;  break;
-		 case CV_EVENT_RBUTTONDOWN : zi->zrate *= 0.8;	break;
-		 }
+		 int mv = getMouseWheelDelta(flags) / 120 ;
+		 zi->zrate +=  zi->zrate * 0.1 * mv;
+
 
 		 float  vr  =  (float) ws.height / zi->src.rows, hr = (float) ws.width / zi->src.cols;
 		 float  max_zr = hr>vr ? hr : vr;
