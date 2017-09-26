@@ -20,8 +20,13 @@ int main(int argc, char **argv) {
 	}
 
 	linescan scan;
-	scan.merge_other_obj = true;
+	scan.debug = true;
+	scan.line_max_width = 10;
+	scan.line_min_length = 5;;
+
+	scan.merge_other_obj = false;
 	scan.assemble_range = 100;
+	scan.adp_thresh = 3;
 	scan.assemble_thresh = 0.5;
 
 	for(int i=1; i<argc; i++){
@@ -31,17 +36,18 @@ int main(int argc, char **argv) {
 			return 0;
 		}
 
-		threshold(gray,gray,150,255,THRESH_BINARY);
+		imshow("gray", gray);
+		threshold(gray,gray,100,255,THRESH_BINARY);
 		gray = gray / 2;
+
 
 
 		scan.scanline(gray);
 		scan.DrawPaths(gray);
 
-
 		imshow("objscan_test result",gray);
 		fflush(stdout);;
-		waitKey(0);
+		if(waitKey(0) == 'q') break;;
 	}
 
 	return 0;

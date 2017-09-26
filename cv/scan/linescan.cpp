@@ -52,7 +52,7 @@ inline char* tostr(Rect r){
 linescan::linescan() {
 	// TODO Auto-generated constructor stub
 	debug = false;
-
+	adp_thresh = 10;
 	merge_other_obj = true;
 
 	line_max_width = 40;	// line 추출시 넓이 임계값
@@ -273,9 +273,7 @@ bool check_connected(Mat map, Path ph1, Path ph2, float thresh){
 	int l  = xd>yd? xd : yd;
 	double dens = (double)  pixel_sum / l / 255;
 
-
-	//	if(thresh < 0.8 ) printf("%d,%d  - %d,%d :  con_dens:%.2f\n", p1.x, p1.y,  p2.x, p2.y, dens);
-
+	//	if(thresh < 0.8 )	printf("\t %d,%d  - %d,%d :  con_dens:%.2f\n", p1.x, p1.y,  p2.x, p2.y, dens);
 
 	if(dens < thresh) return false;
 	else return true;
@@ -326,7 +324,7 @@ float  linkability(Path ph1 , Path ph2, float max_range){
 	float angv = ang_sim(ph1, ph2, order);
 	float dv =  d_sum / ( d_sum + dx );
 
-	//printf("\t%s ~ %s : %.2f * %.2f = %.2f \n", tostr(ph1), tostr(ph2), angv, dv, angv * dv);
+	printf("\t%s ~ %s : %.2f * %.2f = %.2f \n", tostr(ph1), tostr(ph2), angv, dv, angv * dv);
 
 	return  abs(dv * angv);
 }
@@ -344,7 +342,7 @@ float  linkability(Path ph1 , Path ph2, float max_range){
 void linescan::assemble_path(Xobj *xobj){
 
 
-	bool debug = false;
+	bool debug = true;
 	int l_thresh =  assemble_range ;
 
 	typedef struct {	// 관계 계산용 구조체
@@ -385,19 +383,26 @@ void linescan::assemble_path(Xobj *xobj){
 			printf("%s \n", tostr(*i));
 			for(int n=0; n<c; n++) {
 				Path ph = *(rels[n].iph);
-				//printf(" - %s : %.2f\n", tostr(ph), rels[n].r );
+				printf(" - %s : %.2f\n", tostr(ph), rels[n].r );
 			}
 		}
+
 
 
 		// 가장 가까운 점부터 연결 가능 점검 후 가능시 연결
 		int n=0;
 		for(; n<c; n++){
 			Iter_path iph = rels[n].iph;
-			//printf(" ~ %s : %.2f\n", tostr(*iph), rels[n].r );
+			printf(" ~ %s : %.2f\n", tostr(*iph), rels[n].r );
+
+			Point jh = *(iph->begin());
+
+			if( ih == Point(30,28) && jh == Point(88,76) ) {
+				printf("===========\n");
+			}
 
 			if( rels[n].r < assemble_range &&
-				( rels[n].r < 5 || !merge_other_obj || check_connected(bimg,  *i, *iph, 0.9 ) ) &&
+				( rels[n].r < 5 || check_connected(bimg,  *i, *iph, 0.9 ) ) &&
 				linkability( *i, *iph, assemble_range ) > assemble_thresh )
 			{
 					*i = merge_path(*i, *iph, hReverse, tReverse);
@@ -530,7 +535,8 @@ void linescan::calc_path(Xobj *xobj){
 		}
 
 		for(Iter_path i = paths.begin(); i != paths.end(); i++)
-			if(i->size() > min_size) {
+			if(i->size() > line_min_length) {
+				draw_path(dbgimg, *i, Scalar(255));
 				Point p1 = *(i->begin()), p2 = *(i->end()-1);
 				xobj->paths.push_back(*i);
 			}
@@ -626,11 +632,12 @@ vector <Path>  linescan::assemble_expath(vector <Path> paths){
 
 }
 
-void linescan::draw_path(Mat img, Path ph, Scalar color){
+void linescan::draw_path(Mat img, Path ph, Scalar color, uchar drawflag){
 
 	///bool show_guide = false;
-	bool draw_circle =  true;
-	bool use_randcolor = false;
+	bool draw_point =  drawflag & flag_draw_point > 0 ? true : false;
+	bool draw_edge =  drawflag & flag_draw_edge > 0 ? true : false;
+
 
 	Vec3b v(color.val[0], color.val[1], color.val[2] );
 	Point lp = *ph.begin();
@@ -638,10 +645,10 @@ void linescan::draw_path(Mat img, Path ph, Scalar color){
 		if(lp.x >= 0) 	line(img, lp, *i, color, 1);
 
   		Point m = Point( (lp.x + i->x) / 2, (lp.y + i->y) / 2 );
-		if(draw_circle) circle(img, *i, 2, color );
+		if(draw_point) circle(img, *i, 2, color );
 		lp = *i;
 	}
-	if(ph.size() > 5){
+	if( /*ph.size() > 5 && */ draw_edge){
 		circle(img, *ph.begin(), 7, color );
 		circle(img, *(ph.end()-1), 7, color );
 	}
@@ -657,7 +664,7 @@ void linescan::DrawPaths(Mat img){
 			draw_path(img, *ip, Scalar(150,150,100));
 	*/
 	for(Iter_path ip = paths.begin();  ip != paths.end(); ip++)
-		draw_path(img, *ip, Scalar(255,255,255));
+		draw_path(img, *ip, Scalar(255,255,255), flag_draw_point | flag_draw_edge);
 
 }
 
@@ -736,7 +743,7 @@ vector <Path>  linescan::scanPath(vector <Xobj*> xobjs, bool mode ){ // mode 0 :
 
 		vector <Path> dpaths;
 		for(Iter_path i = xobj->paths.begin(); i != xobj->paths.end(); i++ )
-			dpaths.push_back(srlib::douglasPeucker(*i, 5 , srlib::MODE_ADP ) );
+			dpaths.push_back(srlib::douglasPeucker(*i, adp_thresh , srlib::MODE_ADP ) );
 		xobj->paths = dpaths;
 
 		assemble_path(xobj);
@@ -764,16 +771,17 @@ vector <Path>  linescan::scanPath(vector <Xobj*> xobjs, bool mode ){ // mode 0 :
  */
 void 	linescan::scanline(Mat gimg){
 
-	bimg = gimg;
+	threshold(gimg, bimg, 5, 255, THRESH_BINARY);
+	if(debug) dbgimg =  gimg / 2;
 
 	printf("\n---scan etches----\n");
 
 	xobjs = scanX(gimg);
 	paths = scanPath(xobjs, 0);
 	filter_path(paths, 2);
-	printf("etchs size:%d\n",  xobjs.size());
 
 
+	if(debug) imshow("dbgimg", dbgimg);
 
 }
 
