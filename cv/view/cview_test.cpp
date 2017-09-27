@@ -14,7 +14,7 @@ using namespace std;
 using namespace srlib;
 
 
-void rect_read( Mat img, void *ptr){
+void handle_rectdrag( Mat img, void *ptr){
 	property *pp = (property*)ptr;
 	Rect r = pp->dragrect;
 
@@ -40,7 +40,7 @@ int main( int argc, char **argv ){
 		cview::turnon("cview", "xyhistogram");
 		//cview::turnon("cview", "xyposition");
 
-		cview::handle("cview", "evt_dragrect", rect_read);
+		cview::handle("cview", "evt_dragrect", handle_rectdrag);
 		cview::show("cview", img);
 
 		fflush(stdout);

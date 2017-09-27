@@ -125,7 +125,24 @@ void obj::draw(Mat img, Scalar color){
 			}
 	}
 
+}
 
+void obj::draw(Mat img, int x, int y, Scalar color){
+
+	Rect r = getRect();
+	int sx = r.x - x, sy = r.y - y;
+
+	for(int i=0;i<rods.size();i++){
+		rod tr = rods[i];
+		for(int j=tr.s; j<=tr.e; j++)
+			if(img.channels() == 3 ) {
+				if(direction)  img.at<Vec3b>(j - sy, tr.layer - sx) = Vec3b( color.val[0], color.val[1], color.val[2] );
+				else  img.at<Vec3b>( tr.layer - sy, j - sx) = Vec3b( color.val[0], color.val[1], color.val[2] );
+			} else if(img.channels() == 1 ) {
+				if(direction)  img.at<uchar>(j - sy, tr.layer - sx) = color.val[0];
+				else  img.at<uchar>( tr.layer - sy, j - sx) = color.val[0];
+			}
+	}
 }
 
 int  obj::getVolume(){

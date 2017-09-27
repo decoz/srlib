@@ -71,6 +71,7 @@ public:
 	void append(rod rd);
 
 	void draw(Mat img, Scalar color);
+	void draw(Mat img, int x, int y, Scalar color);
 
 	Rect getRect();
 private:
