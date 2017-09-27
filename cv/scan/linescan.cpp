@@ -65,7 +65,7 @@ linescan::linescan() {
 linescan::~linescan() {
 	// TODO Auto-generated destructor stub
 	bimg.release();
-	printf("destroy linescan\n"); fflush(stdout);
+	if(debug) printf("destroy linescan\n"); fflush(stdout);
 }
 
 
@@ -324,7 +324,7 @@ float  linkability(Path ph1 , Path ph2, float max_range){
 	float angv = ang_sim(ph1, ph2, order);
 	float dv =  d_sum / ( d_sum + dx );
 
-	printf("\t%s ~ %s : %.2f * %.2f = %.2f \n", tostr(ph1), tostr(ph2), angv, dv, angv * dv);
+	//printf("\t%s ~ %s : %.2f * %.2f = %.2f \n", tostr(ph1), tostr(ph2), angv, dv, angv * dv);
 
 	return  abs(dv * angv);
 }
@@ -342,7 +342,7 @@ float  linkability(Path ph1 , Path ph2, float max_range){
 void linescan::assemble_path(Xobj *xobj){
 
 
-	bool debug = true;
+	bool debug = false;
 	int l_thresh =  assemble_range ;
 
 	typedef struct {	// 관계 계산용 구조체
@@ -380,10 +380,10 @@ void linescan::assemble_path(Xobj *xobj){
 			if( rels[m].r > rels[m+1].r ) trel = rels[m], rels[m] = rels[m+1], rels[m+1] = trel;
 
 		if(debug){
-			printf("%s \n", tostr(*i));
+			//printf("%s \n", tostr(*i));
 			for(int n=0; n<c; n++) {
 				Path ph = *(rels[n].iph);
-				printf(" - %s : %.2f\n", tostr(ph), rels[n].r );
+				//printf(" - %s : %.2f\n", tostr(ph), rels[n].r );
 			}
 		}
 
@@ -393,13 +393,9 @@ void linescan::assemble_path(Xobj *xobj){
 		int n=0;
 		for(; n<c; n++){
 			Iter_path iph = rels[n].iph;
-			printf(" ~ %s : %.2f\n", tostr(*iph), rels[n].r );
+			//printf(" ~ %s : %.2f\n", tostr(*iph), rels[n].r );
 
 			Point jh = *(iph->begin());
-
-			if( ih == Point(30,28) && jh == Point(88,76) ) {
-				printf("===========\n");
-			}
 
 			if( rels[n].r < assemble_range &&
 				( rels[n].r < 5 || check_connected(bimg,  *i, *iph, 0.9 ) ) &&
@@ -436,9 +432,7 @@ void linescan::assemble_path(Xobj *xobj){
  */
 bool linescan::link_point(vector <Path> &paths, Point p, int dir){
 
-	printf("LP %d,%d (%d) : ", p.x, p.y,  dir);
-
-	int max_l = line_max_width / 2;
+		int max_l = line_max_width / 2;
 	bool  debug = true;
 	double min_d = -1;
 	Iter_path i_minpath;
@@ -451,10 +445,7 @@ bool linescan::link_point(vector <Path> &paths, Point p, int dir){
 		if( tl != cl && (  r < min_d || min_d < 0  ) ) min_d = r, i_minpath = i;
 	}
 
-	if(min_d > 0){
-		Point lp = *( i_minpath->end() - 1) ;
-		printf("min_d:%d,%d ( %.2f ) \n", lp.x, lp.y, min_d );
-	}
+	if(min_d > 0) 	Point lp = *( i_minpath->end() - 1) ;
 
 	if(min_d < max_l && min_d  > 0) {
 		i_minpath->push_back(p);
@@ -463,7 +454,6 @@ bool linescan::link_point(vector <Path> &paths, Point p, int dir){
 		Path npath;
 		npath.push_back(p);
 		paths.push_back(npath);
-		if(debug) printf("\t______<%d,%d\n", p.x, p.y);
 		return false;
 	}
 
@@ -563,7 +553,7 @@ void linescan::calc_path(Xobj *xobj){
  */
 vector <Path>  linescan::assemble_expath(vector <Path> paths){
 
-	printf("assemble_expath for %d paths \n", paths.size());
+	if(debug) printf("assemble_expath for %d paths \n", paths.size());
 	bool debug = false;
 	int l_thresh =  assemble_range ;
 
@@ -733,7 +723,7 @@ vector <Xobj*> linescan::scanX(Mat gimg){
 		}
 	}
 
-	printf("scan result:%d obj\n", xobjs.size());
+	if(debug) printf("scan result:%d obj\n", xobjs.size());
 
 	return xobjs;
 }
@@ -766,7 +756,7 @@ vector <Path>  linescan::scanPath(vector <Xobj*> xobjs, bool mode ){ // mode 0 :
 	if(merge_other_obj) paths = assemble_expath(paths);
 
 
-	printf("extracted path count:%d\n", paths.size());
+	if(debug) printf("extracted path count:%d\n", paths.size());
 	return paths;
 
 }
@@ -783,8 +773,6 @@ void 	linescan::scanline(Mat gimg){
 
 	threshold(gimg, bimg, 5, 255, THRESH_BINARY);
 	if(debug) dbgimg =  gimg / 2;
-
-	printf("\n---scan etches----\n");
 
 	xobjs = scanX(gimg);
 	paths = scanPath(xobjs, 0);

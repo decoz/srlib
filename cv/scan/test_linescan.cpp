@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 	}
 
 	linescan scan;
-	scan.debug = true;
+	scan.debug = false;
 	scan.line_max_width = 20;
 	scan.line_min_length = 5;;
 
