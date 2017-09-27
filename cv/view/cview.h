@@ -36,6 +36,7 @@ typedef struct _property{
 	Rect 	dragrect;
 	Mat	dragsave;
 	bool 	dragging;
+	bool 	dragend;
 
 	bool xyhistogram;				// xy histogram  À» Ãâ·Â
 	bool xyposition;

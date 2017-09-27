@@ -103,11 +103,15 @@ void cview::handle_dragrect(int evt, int x, int y, int flags, void *param){
 		}
 		break;
 	case CV_EVENT_LBUTTONDOWN:
+		if( !pp->dragend ) break; // 이벤트 처리중 다른 drag 진입 금지
+
 		pp->dragrect = Rect(x,y,0,0);
 		pp->dragging = true;
 		printf("lbdown\n"); break;
 
 	case CV_EVENT_LBUTTONUP:
+		if( !pp->dragend ) break; // 이벤트 처리중 다른 drag 진입 금지
+
 		pp->dragrect = pos2rect(Point(dr.x,dr.y), Point(x,y));
 		dr = pp->dragrect;
 		printf("rect [%d,%d,%d,%d]\n", dr.x, dr.y, dr.width, dr.height);
@@ -117,8 +121,9 @@ void cview::handle_dragrect(int evt, int x, int y, int flags, void *param){
 		pp->dragsave.release();
 		pp->dragging = false;
 
+		pp->dragend = false;		// 임계영역
 		pp->evt_dragrect(img, pp);
-
+		pp->dragend = true;
 		break;
 	}
 
@@ -201,6 +206,7 @@ void init_property(property *pp){
 
 	pp->evt_dragrect = NULL;
 	pp->dragging = false;
+	pp->dragend = true;
 }
 
 void cview::_setEvent(char *name, char *ename, Handler handler ){
