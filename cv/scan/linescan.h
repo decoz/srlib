@@ -58,9 +58,12 @@ enum {
 
 class linescan : public objscan {
 
+private:
 	void calc_path(Xobj *xobj);
 	void draw_path(Mat img, Path ph, Scalar color, uchar  drawflag = 0);
 	void assemble_path(Xobj *xobj);
+
+	bool link_point(vector <Path> &paths, Point p, int dir);
 
 	vector <Xobj*> scanX(Mat gimg);
 

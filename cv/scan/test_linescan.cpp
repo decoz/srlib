@@ -21,13 +21,13 @@ int main(int argc, char **argv) {
 
 	linescan scan;
 	scan.debug = true;
-	scan.line_max_width = 10;
+	scan.line_max_width = 20;
 	scan.line_min_length = 5;;
 
-	scan.merge_other_obj = false;
-	scan.assemble_range = 100;
+	scan.merge_other_obj = true;
+	scan.assemble_range = 40;
 	scan.adp_thresh = 3;
-	scan.assemble_thresh = 0.5;
+	scan.assemble_thresh = 0.7;
 
 	for(int i=1; i<argc; i++){
 		Mat gray = imread(argv[i], CV_LOAD_IMAGE_GRAYSCALE);

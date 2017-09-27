@@ -434,17 +434,26 @@ void linescan::assemble_path(Xobj *xobj){
  * paths 들중 점과 가장 가까운 멤버를 끝에 보유한 패스를 선정해
  * 그 패스끝에 점을 추가한다.
  */
-bool link_point(vector <Path> &paths, Point p){
+bool linescan::link_point(vector <Path> &paths, Point p, int dir){
 
-	int max_l = 10;
-	bool  debug = false;
+	printf("LP %d,%d (%d) : ", p.x, p.y,  dir);
+
+	int max_l = line_max_width / 2;
+	bool  debug = true;
 	double min_d = -1;
 	Iter_path i_minpath;
 	for(Iter_path i = paths.begin(); i != paths.end(); i++){
 
 		Point tp = *(i->end() - 1);
+		int tl = dir? tp.x : tp.y, cl = dir? p.x : p.y;
+
 		float r = range(tp, p);
-		if( r < min_d || min_d < 0 ) min_d = r, i_minpath = i;
+		if( tl != cl && (  r < min_d || min_d < 0  ) ) min_d = r, i_minpath = i;
+	}
+
+	if(min_d > 0){
+		Point lp = *( i_minpath->end() - 1) ;
+		printf("min_d:%d,%d ( %.2f ) \n", lp.x, lp.y, min_d );
 	}
 
 	if(min_d < max_l && min_d  > 0) {
@@ -457,6 +466,7 @@ bool link_point(vector <Path> &paths, Point p){
 		if(debug) printf("\t______<%d,%d\n", p.x, p.y);
 		return false;
 	}
+
 }
 
 
@@ -531,7 +541,7 @@ void linescan::calc_path(Xobj *xobj){
 				}
 			}
 			Point p = dir>0? Point(ml,m) : Point(m,ml);
-			if(w < w2 && w < line_max_width ) link_point(paths, p) ;
+			if(w < w2 && w < line_max_width ) link_point(paths, p, dir) ;
 		}
 
 		for(Iter_path i = paths.begin(); i != paths.end(); i++)
