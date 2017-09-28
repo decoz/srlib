@@ -122,7 +122,7 @@ void cview::handle_dragrect(int evt, int x, int y, int flags, void *param){
 		pp->dragging = false;
 
 		pp->dragend = false;		// 임계영역
-		pp->evt_dragrect(img, pp);
+		if( dr.width * dr.height > 25 ) pp->evt_dragrect(img, pp);
 		pp->dragend = true;
 		break;
 	}
