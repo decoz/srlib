@@ -33,6 +33,8 @@ typedef void (*Handler)(Mat img, void* userdata); // event handler
 
 
 typedef struct _property{
+
+	Point	dp;
 	Rect 	dragrect;
 	Mat	dragsave;
 	bool 	dragging;
