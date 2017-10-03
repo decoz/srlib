@@ -161,6 +161,8 @@ void obj::sort(){
 
 Rect  obj::getRect(){
 
+	if(rect_updated) return r;
+
 	int l = rods.size();
 	int sl = rods[0].layer, el = rods[l-1].layer;
 
@@ -175,7 +177,7 @@ Rect  obj::getRect(){
 		if(max < rods[i].e) max = rods[i].e;
 	}
 
-	Rect r;
+	//Rect r;
 
 	if(direction) {
 		r.x = sl;
@@ -190,6 +192,7 @@ Rect  obj::getRect(){
 		r.height = el - sl + 1;
 	}
 
+	rect_updated = true;
 
 	return r;
 }
@@ -197,16 +200,15 @@ Rect  obj::getRect(){
 
 void obj::merge( obj o){
 
-
-
 	for(int i=0;i<o.rods.size();i++)
 		rods.push_back(o.rods[i]) ;
-
 	sort();
+	rect_updated = false;
 }
 
 void obj::append(rod rd){
 	rods.push_back(rd);
+	rect_updated = false;
 }
 
 

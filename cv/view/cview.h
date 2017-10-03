@@ -27,11 +27,7 @@ using namespace std;
 
 namespace srlib{
 
-
 typedef void (*Handler)(Mat img, void* userdata); // event handler
-
-
-
 typedef struct _property{
 
 	Point	dp;
@@ -40,10 +36,12 @@ typedef struct _property{
 	bool 	dragging;
 	bool 	dragend;
 
-	bool xyhistogram;				// xy histogram  을 출력
-	bool xyposition;
+	bool 	xyhistogram;				// xy histogram  을 출력
+	bool 	xyposition;
+	void*	userptr;
 
 	Handler evt_dragrect; 	// rectangle drag event
+
 } property;
 
 class cview {
@@ -74,8 +72,8 @@ public:
 		getIt()->_setProperty(name, pname, pvalue);
 	}
 
-	static void handle(char *name, char *ename, Handler handler ){
-		getIt()->_setEvent(name, ename, handler);
+	static void handle(char *name, char *ename, Handler handler , void *ptr){
+		getIt()->_setEvent(name, ename, handler, ptr);
 	}
 
 
@@ -87,7 +85,7 @@ public:
 	void _show(char *name, Mat img);
 	void _show_mouse_pos(char *name);
 	void _setProperty(char *name, char *pname,const char *pvalue);
-	void _setEvent(char *name, char *ename, Handler handler );
+	void _setEvent(char *name, char *ename, Handler handler, void *ptr );
 
 	Size _getSize(property *pp);
 

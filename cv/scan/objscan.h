@@ -75,6 +75,9 @@ public:
 
 	Rect getRect();
 private:
+	Rect r;
+	bool rect_updated;
+
 
 };
 typedef bunch::iterator  Iter_bunch;

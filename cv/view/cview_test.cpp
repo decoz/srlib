@@ -40,7 +40,7 @@ int main( int argc, char **argv ){
 		cview::turnon("cview", "xyhistogram");
 		//cview::turnon("cview", "xyposition");
 
-		cview::handle("cview", "evt_dragrect", handle_rectdrag);
+		cview::handle("cview", "evt_dragrect", handle_rectdrag, NULL);
 		cview::show("cview", img);
 
 		fflush(stdout);

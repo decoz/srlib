@@ -207,9 +207,11 @@ void init_property(property *pp){
 	pp->evt_dragrect = NULL;
 	pp->dragging = false;
 	pp->dragend = true;
+
+	pp->userptr = NULL;
 }
 
-void cview::_setEvent(char *name, char *ename, Handler handler ){
+void cview::_setEvent(char *name, char *ename, Handler handler , void *ptr){
 	property *pp;
 	if( pmap.find(name) == pmap.end() ) {
 		pp = new property;
@@ -217,7 +219,10 @@ void cview::_setEvent(char *name, char *ename, Handler handler ){
 		pmap[name] = pp;
 	} pp = pmap[name];
 
+	pp->userptr = ptr;
+
 	if( !strcmp(ename,"evt_dragrect") ){
+		pp->userptr = ptr;
 		pp->evt_dragrect = handler;
 	}
 }
