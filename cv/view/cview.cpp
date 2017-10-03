@@ -79,6 +79,17 @@ inline Rect pos2rect(Point p1, Point p2){
 		);
 }
 
+inline Rect correct_rect(Size sz, Rect r){
+
+	if( r.x < 0 ) r.x = 0;
+	if( r.y < 0 ) r.y = 0;
+	if( r.x + r.width > sz.width ) r.width =  sz.width - r.x;
+	if( r.y + r.height > sz.height ) r.height =  sz.height - r.y;
+
+	return r;
+}
+
+
 void cview::handle_dragrect(int evt, int x, int y, int flags, void *param){
 
 	char *name = (char*) param;
@@ -96,6 +107,8 @@ void cview::handle_dragrect(int evt, int x, int y, int flags, void *param){
 		if(pp->dragging) {
 			if(!pp->dragsave.empty()) resotre(img, dr, pp->dragsave);
 			dr = 	pos2rect(pp->dp, Point(x,y));
+			dr =   correct_rect(img.size(), dr);
+
 			pp->dragsave =  save(img, dr );
 			rectangle(img, dr, Scalar(255,255,255) );
 			pp->dragrect = dr;
@@ -114,6 +127,8 @@ void cview::handle_dragrect(int evt, int x, int y, int flags, void *param){
 
 		pp->dragrect = pos2rect(pp->dp, Point(x,y));
 		dr = pp->dragrect;
+		dr =   correct_rect(img.size(), dr);
+
 		printf("rect [%d,%d,%d,%d]\n", dr.x, dr.y, dr.width, dr.height);
 
 		if(!pp->dragsave.empty()) resotre(img, dr, pp->dragsave);
