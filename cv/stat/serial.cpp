@@ -47,7 +47,6 @@ float serial::represent(){
 		sorted.assign(values.begin(),  values.end() );
 		sort(sorted.begin(), sorted.end());
 
-		//for(f_i i=sorted.begin(); i != sorted.end();  i++) printf("/%.2f\n", *i);
 		float density[ n ];
 
 		int ci = 0;
@@ -64,14 +63,14 @@ float serial::represent(){
 		double max = 0;
 
 		for(int i=0; i<n; i++){
-			//printf("- %.2f : %.2f \n", sorted[i], density[i]);
 			if( density[i] > max ) max = density[i], best = i;
 		}
-		printf("max density : %.4f, best value: %.2f \n",  max, sorted[best] );
 
-	}
+		return sorted[best];
 
-	return sorted[best];
+	} else return 0;
+
+
 
 }
 
