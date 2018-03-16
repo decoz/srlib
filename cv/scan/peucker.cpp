@@ -6,7 +6,8 @@
  */
 
 #include "peucker.h"
-#include "srlib.h"
+
+#include "scanlib.h"
 
 namespace srlib {
 

@@ -8,7 +8,8 @@
 #include "linescan.h"
 
 #include <math.h>
-#include "srlib.h"
+
+#include "scanlib.h"
 
 
 namespace srlib {

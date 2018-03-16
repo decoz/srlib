@@ -86,6 +86,8 @@ double 	line2theta(Point p1, Point p2);								// p1과  p2 가 잇는 line 의 각도�
 String 	wcharAt(String s, int idx);			// 한글여부를 고려해 n번째 글자 리턴
 int 		wcharcnt(String s);					// 몇글자로 구성된 스트링인지 리턴
 
+/********************************** direction ****************************/
+Point *createDirArr(int r); 						// 인접 영역 좌표 배열 생성
 
 } // namespace srlib
 #endif
