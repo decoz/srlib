@@ -93,10 +93,11 @@ typedef vector<obj>::iterator Iter_obj;
 class objscan {
 private:
 
-	Mat gray;
+
 	bunch mergeTiss( bunch b1, bunch b2);
 
 public:
+	Mat 	gray;
 	int 	min_thresh; 				// min_thresh > 0  인경우 object 구성시 일정 수치 이하의 오브젝트는 필터링함
 	Size 	img_size;
 	bool 	dmsg;

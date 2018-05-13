@@ -38,6 +38,7 @@ public:
 	char *next();			// 다음 파일의 파일네임을 리턴하고 끝인경우 null 을 리턴
 	char *getName(); 	// 현재 선택된 파일의 파일명을 리턴 (디렉토리의 경우 디렉토리명)
 	char *getPath(); 	// 현재 선택된 파일의 패스를 리턴
+	char *pathName(char *path, char *name); // 경로와  파일명을 합쳐서 리턴
 
 	fileloader();
 	virtual ~fileloader();
@@ -46,7 +47,7 @@ private:
 	int cur;
 
 	char *cutoffPath(char *str); // 파일명을 제외한 경로만 분리,  마지막에 / 첨가
-	char *pathName(char *path, char *name); // 경로와  파일명을 합쳐서 리턴
+
 };
 
 

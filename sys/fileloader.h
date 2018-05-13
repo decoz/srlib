@@ -44,9 +44,9 @@ public:
 
 private:
 	int cur;
-
-	char *cutoffPath(char *str); // 파일명을 제외한 경로만 분리,  마지막에 / 첨가
 	char *pathName(char *path, char *name); // 경로와  파일명을 합쳐서 리턴
+	char *cutoffPath(char *str); // 파일명을 제외한 경로만 분리,  마지막에 / 첨가
+
 };
 
 
